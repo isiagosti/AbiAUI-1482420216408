@@ -1,4 +1,4 @@
-
+var tokenTTS = 'api/text-to-speech/token';
 $(document).ready(function() {
     
     // Load home main 
@@ -35,7 +35,8 @@ $(document).ready(function() {
     });
 
     $( "body" ).on( "click", "#buttonTTS", function(e){ 
-        fetch('api/text-to-speech/token')
+        console.log(text.value);
+        fetch(tokenTTS)
             .then(function(response) {
                 return response.text();
             }).then(function (token) {
@@ -46,6 +47,7 @@ $(document).ready(function() {
             });
         }); 
     }); 
+    
 });
                  
 /*

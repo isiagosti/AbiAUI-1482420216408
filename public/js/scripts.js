@@ -16,8 +16,8 @@ function home() {
 
 function textToSpeech() {
     var r='';
-    r+='<button type="button" class="btn btn-default" id="btnHome">Back to homepage</button>';
-    r+='<section>';
+    r+='<button type="button" class="btn btn-default" id="btnHome"><< Back to homepage</button>';
+    r+='<section style="margin-left:20px">';
         r+='<h2>Basic Text to Speech Example</h2>';
         r+='<textarea id="text" rows="6" cols="80">Hello from IBM Watson</textarea><br>';
         r+='<button type="button" class="btn btn-default" id="buttonTTS">Synthesize Text</button>';
