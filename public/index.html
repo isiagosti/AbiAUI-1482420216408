@@ -1,33 +1,36 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Basic Example - Watson Text to Speech</title>
+</head>
+<body>
 
-  <head>
-    <title>NodeJS Starter Application</title>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="stylesheets/style.css">
-  </head>
+<section>
+    <h2>Basic Text to Speech Example</h2>
+    <textarea id="text" rows="6" cols="80">Hello from IBM Watson</textarea>
+    <p><button id="button">Synthesize Text</button></p>
+</section>
 
-  <body>
-    <table>
-      <tr>
-        <td style= "width:30%;">
-          <img class = "newappIcon" src="images/newapp-icon.png">
-        </td>
-        <td>
-          <h1 id="message">Hello World!</h1>
-          <p class='description'></p> Thanks for creating a <span class = "blue">NodeJS Starter Application</span>.
-        </td>
-      </tr>
-    </table>
-      <button onclick="func()" id="TextToSpeech">Text To Speech</button>
-      
-      
-      
-      <script language="JavaScript"
-        type="text/javascript"
-        src="js/app.js"></script>
-  </body>
+<script src="watson/watson-speech.js"></script>
+    
+<!-- window.fetch pollyfill for IE/Edge & Older Chrome/FireFox -->
+<script src="bower_components/fetch/fetch.js"></script>
 
+<script>
+    
+document.querySelector('#button').onclick = function () {
+    console.log(document.querySelector('#text').value);
+  fetch('api/text-to-speech/token')
+    .then(function(response) {
+      return response.text();
+    }).then(function (token) {
+      WatsonSpeech.TextToSpeech.synthesize({
+        text: document.querySelector('#text').value,
+        token: token
+      });
+    });
+};
+</script>
+</body>
 </html>
