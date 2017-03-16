@@ -15,9 +15,9 @@ exports.STTUsername = '1e23d65b-02c3-46c7-b7eb-55a2448f5965' ;
 
 
 // Credentials for Watson Conversation service
-exports.ConPassword = 'FmEKUBXlKAgu' ;
-exports.ConUsername = '9995d4a6-e918-4b3a-afb1-c011a211ef78' ;
-exports.ConWorkspace = '63be7e0f-0094-495a-8514-bb852fa23c79';
+exports.ConPassword = 'pXg28bdgeDll' ;
+exports.ConUsername = '7babb9e0-fdce-4a9d-b771-2c6ddd7a5f81' ;
+exports.ConWorkspace = '209dfa35-cfa3-447f-9a63-89322ca6f0ca';
 
 //Credentials for Watson Text to Speech service
 exports.TTSPassword = 'QqHjDSIPzkqa' ; 
