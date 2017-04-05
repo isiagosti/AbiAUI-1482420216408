@@ -73,7 +73,7 @@ micInputStream.on('silence', function() {
   // detect silence.
 });
 micInstance.start();
-console.log("TJBot is listening, you may speak now.");
+console.log("ABI is listening, you may speak now.");
 
 var textStream ;
 
@@ -123,20 +123,14 @@ Once the attention word is detected,the text is sent to Watson conversation for 
 */
 var context = {} ; // Save information on conversation context/stage for continous conversation
 var conversationStarted = false;
-    /*  variable toRead identifies which book, if there is one, ABI has to read; if this variable is 0 no book are ABI has to read
-    and the normal flows of the conversation is respected
-    */
-var toRead = 0;
 textStream.setEncoding('utf8');
-
-
-
 textStream.on('data', function(str) {
   console.log(' ===== Speech to Text ===== : ' + str); // print the text once received
     if(!conversationStarted){
+        
         if (str.toLowerCase().indexOf(attentionWord.toLowerCase()) >= 0) {
             conversationStarted = true;
-            var res = str.toLowerCase().replace(attentionWord.toLowerCase(), "");
+            var res = str.toLowerCase();
             console.log("msg sent to conversation:" ,res);
             conversation.message({
                 workspace_id: config.ConWorkspace,
@@ -185,117 +179,78 @@ textStream.on('data', function(str) {
         } else {
             console.log("Waiting to hear", attentionWord);
         }
+        /*When the conversation is already initialized */
     } else {
-
-        if(toRead != 0){
-            var testBook = {
-                text: "now I have to start reading some fucking stuff! YEA broh!",
-                voice: config.voice,
-                accept: 'audio/wav'
-            };
-
-            tempStream = text_to_speech.synthesize(testBook).pipe(fs.createWriteStream('output.wav')).on('close', function() {
-                var create_audio = exec('aplay output.wav', function (error, stdout, stderr) {
-                    if (error !== null) {
-                        console.log('exec error: ' + error);
-                    }
-                });
-            });
-            // the variable toRead needs to be 0 at the end of the if statement otherwise this statement would be done forever
-            toRead = 0;
-
-
-        }else {
-            //toRead has to take the value of the book to read, in this way ABI know which file has to get in the library
-
-            var res = str.toLowerCase();
-            console.log("msg sent to conversation:", res);
+        var res = str.toLowerCase();
+            console.log("msg sent to conversation:" ,res);
             conversation.message({
                 workspace_id: config.ConWorkspace,
                 input: {'text': res},
                 context: context
-            }, function (err, response) {
+            },  function(err, response) {
                 if (err) {
                     console.log('error:', err);
                 } else {
-                    context = response.context; //update conversation context
-
+                    context = response.context ; //update conversation context
+        
                     if (Array.isArray(response.output.text)) {
                         conversation_response = response.output.text.join(' ').trim();
                     } else {
                         conversation_response = undefined;
                     }
-
-                    if (conversation_response) {
+        
+                    if (conversation_response){
                         var params = {
                             text: conversation_response,
                             voice: config.voice,
                             accept: 'audio/wav'
                         };
-                        /*********************************************************************
-                         Step #5: Speak out the response
-                         *********************************************************************
-                         In this step, we text is sent out to Watsons Text to Speech service and result is piped to wave file.
-                         Wave files are then played using alsa (native audio) tool.
-                         */
-                        tempStream = text_to_speech.synthesize(params).pipe(fs.createWriteStream('output.wav')).on('close', function () {
+
+                        console.log("Result from conversation:" ,conversation_response);
+          /*********************************************************************
+          Step #5: Speak out the response
+          *********************************************************************
+          In this step, we text is sent out to Watsons Text to Speech service and result is piped to wave file.
+          Wave files are then played using alsa (native audio) tool.
+          */
+                        tempStream = text_to_speech.synthesize(params).pipe(fs.createWriteStream('output.wav')).on('close', function() {
                             var create_audio = exec('aplay output.wav', function (error, stdout, stderr) {
                                 if (error !== null) {
                                     console.log('exec error: ' + error);
                                 }
                             });
                         });
-                    } else {
-                        console.log("The response (output) text from your conversation is empty. Please check your conversation flow \n" + JSON.stringify(response));
+                        
+                        if(conversation_response.toLowerCase().indexOf("ok! i will read you") >= 0) {
+                            var bookToRead = {
+                            text: "Harry potter is now starting merde",
+                            voice: config.voice,
+                            accept: 'audio/wav'
+                            };
 
-                    }
-                    try {
-                        console.log("Result from conversation:", conversation_response);
-                        if (response.entities[0].value != null) {
-                            console.log("SantaLaMadonna: " + response.entities[0].value);
-                            toRead = 1;
-                            /*Take the text file, file is the path */
-                            var file = "";
+                            console.log("Result from conversation:" , "books/"+response.entities[0].value.toLowerCase()+".txt");
 
-                            if (/*response.entities[0].value.toString().toLowerCase().=="Harry Potter"*/1 == 1) {
-                                console.log("I'm here");
-                                file = "harryPotterTest.text";
-                                /*
-                                 var rawFile = new XMLHttpRequest();
-                                 rawFile.open("GET", file, false);
-                                 rawFile.onreadystatechange = function (){
-                                 if(rawFile.readyState === 4){
-                                 if(rawFile.status === 200 || rawFile.status == 0){
-                                 var allText = rawFile.responseText;
-                                 //alert(allText);
-                                 var textToRead = {
-                                 text: allText,
-                                 voice: config.voice,
-                                 accept: 'audio/wav'
-                                 };
-
-                                 tempStream = text_to_speech.synthesize(allText).pipe(fs.createWriteStream('output.wav')).on('close', function() {
-                                 var create_audio = exec('aplay output.wav', function (error, stdout, stderr) {
-                                 if (error !== null) {
-                                 console.log('exec error: ' + error);
-                                 }
-                                 });
-                                 });
-
-                                 }
-                                 }
-                                 }
-                                 */
-                                rawFile.send(null);
-                            }
+                            tempStream = text_to_speech.synthesize(bookToRead).pipe(fs.createWriteStream('output.wav')).on('close', function() {
+                                var create_audio = exec('aplay output.wav', function (error, stdout, stderr) {
+                                    if (error !== null) {
+                                        console.log('exec error: ' + error);
+                                    }
+                                });
+                            });
                         }
-                    } catch (err) {
+                        
+                    }else {
+                        console.log("The response (output) text from your conversation is empty. Please check your conversation flow \n" + JSON.stringify( response))
                     }
+                    /*File reading if initialized
+                    for(int i = 0; i++; entities.){
+                        
+                    }
+                    */
 
                 }
 
             })
-        }
     }
 });
 
