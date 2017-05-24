@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABI</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
+    <script src="./target/ApiAi.js"></script>
+    <script src="functions.js"></script>
+
+    <style>
+        .clearfix {
+            clear: both;
+        }
+    </style>
+</head>
+<body>
+<div id="main-wrapper" style="padding-top:50px">
+    <div class="container">
+        <div class="row">
+            <div class="col s5" > 
+                <div style="display:inline-block; width:350px;">
+                    <input type="text" placeholder="Tell me something..." id="q" style="float:left; width:300px;">
+                    <input type="image" title="Parla con ABI" class="mic-image" src="./img/mic.png" id="mic" > 
+                </div>
+
+                <div id="result">
+                    <!--div class="left-align flow-text">test</div>
+                    <div class="right-align flow-text">one more test</div-->
+                </div>
+            </div>
+            <div class="col s2"></div>
+            <div class="col s5">
+            <!--h5>Request payload:</h5>
+            <pre id="jsonRequest"></pre-->
+            <h5>Response payload:</h5>
+            <pre id="jsonResponse"></pre>
+            </div>
+        </div>
+    </div>
+</div>
+    
+<script defer src="layout.js"></script>
+
+</body>
+</html>
+
+<!--
+<div class="gstl_0 sbib_a" style="height: 44px;">
+    <div class="sbib_d" id="sb_chc0" dir="ltr"></div>
+    <div class="gsst_b sbib_c" id="gs_st0" dir="ltr" style="line-height: 44px;">
+        <a class="gsst_a" href="javascript:void(0)" aria-label="Esegui una ricerca vocale">
+            <span class="gsri_a" id="gsri_ok0"></span>
+        </a>
+        <div id="chmo">
+            <div id="chm">
+                <div class="chmp">
+                    <div class="chmpi chmp"></div>
+                </div>
+                <div style="display: none;">
+                    <div class="chma"></div>
+                    <div>Errore di ascolto. Si è verificato un problema.</div>
+                    <div>
+                        <a>Riavvia ascolto</a>
+                        <a style="padding-left: 10px;">Guida</a>
+                    </div>
+                </div>
+                <div style="display: none;">Rilevamento hotword non attivo.
+                    <div>
+                        <a>Inizia ascolto di "Ok Google"</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="sbib_b" id="sb_ifc0" dir="ltr">
+        <div id="gs_lc0" style="position: relative;">
+            <input class="gsfi" id="lst-ib" maxlength="2048" name="q" autocomplete="off" title="Cerca" type="text" value="" aria-label="Cerca" aria-haspopup="false" role="combobox" aria-autocomplete="both" dir="ltr" spellcheck="false" style="border: none; padding: 0px; margin: 0px; height: auto; width: 100%; background: url(&quot;data:image/gif;base64,R0lGODlhAQABAID/AMDAwAAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw%3D%3D&quot;) transparent; position: absolute; z-index: 6; left: 0px; outline: none;"><div class="gsfi" id="gs_sc0" style="background: transparent; color: transparent; padding: 0px; position: absolute; z-index: 2; white-space: pre; visibility: hidden;"></div><input class="gsfi" disabled="" autocomplete="off" autocapitalize="off" aria-hidden="true" id="gs_taif0" dir="ltr" style="border: none; padding: 0px; margin: 0px; height: auto; width: 100%; position: absolute; z-index: 1; background-color: transparent; -webkit-text-fill-color: silver; color: silver; left: 0px; visibility: hidden;"><input class="gsfi" disabled="" autocomplete="off" autocapitalize="off" aria-hidden="true" id="gs_htif0" dir="ltr" style="border: none; padding: 0px; margin: 0px; height: auto; width: 100%; position: absolute; z-index: 1; background-color: transparent; -webkit-text-fill-color: silver; color: silver; transition: all 0.218s; opacity: 0; text-align: left; left: 0px;"></div></div></div>
+
+-->
