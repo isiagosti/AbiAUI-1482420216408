@@ -1,5 +1,5 @@
-- Lingua in italiano.
+- Immaigni collegate a quello che leggo.
 
-- Capacità di leggere da file dopo aver detto "Ok! Ti leggo ..."
+- Segnalibro.
 
-- Speech to text con microfono.
+- Tieni aperto l'ascolto anche mentre legge.

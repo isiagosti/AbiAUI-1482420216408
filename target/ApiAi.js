@@ -771,7 +771,7 @@ var TTSRequest = (function (_super) {
             throw new Errors_1.ApiAiClientConfigurationError("Request can not be empty");
         }
         var params = {
-            lang: "es",
+            lang: "en-US",
             text: encodeURIComponent(text),
             v: this.apiAiClient.getApiVersion()
         };

@@ -5,12 +5,14 @@
     var queryInput, resultDiv, micBtn, timeout, isSentence;
     var recognition = new webkitSpeechRecognition();
     var recognizing = false;
+    var speaking = false;
     var prefix = '';
     var finalTranscript = '';
     var oldPlaceholder = null;
     var talkMsg = 'Speak now';
     var defaultPatienceThreshold = 2;
     var patience, queryNode, reader; 
+    var speech = window.speechSynthesis;
 
     window.onload = init;
 
@@ -31,18 +33,29 @@
         reader.open('get', file, true); 
         reader.onreadystatechange = displayContents;
         reader.send(null);
+        speaking = false;
     }
 
     function displayContents() {
         if(reader.readyState == 4) {
+            console.log(reader);
             console.log(reader.responseText);
-            tts(reader.responseText);
+            //tts(reader.responseText);
+
+            var msg = new SpeechSynthesisUtterance(reader.responseText);
+            speaking = true;
+            speech.speak(msg);
         }
     }
     
     function speakButton() {
         event.preventDefault();
-
+        
+        if(speaking) {
+            speech.cancel();
+            speaking = false;
+        }
+        
         // stop and exit if already going
         if (recognizing) {
             recognition.stop();
@@ -141,19 +154,28 @@
     function setResponseOnNode(response, result, node) {
         node.innerHTML = result ? result : "[empty response]";
         node.setAttribute('data-actual-response', result);
-        var speaking = false;
 
         function speakNode() {
-          if (!result || speaking) {
-            return;
-          }
-          speaking = true;
-          tts(result)
+            if (!result || speaking) {
+                return;
+            }
+            speaking = true;
+            var msg = new SpeechSynthesisUtterance(result);
+            Promise.resolve(speech.speak(msg))
             .then(function () {speaking = false; checkContext(response);})
             .catch(function (err) {
               speaking = false;
               Materialize.toast(err, 2000, 'red lighten-1');
             });
+
+          /*
+            tts(result)
+            .then(function () {speaking = false; checkContext(response);})
+            .catch(function (err) {
+              speaking = false;
+              Materialize.toast(err, 2000, 'red lighten-1');
+            });
+            */
         }
 
         node.addEventListener("click", speakNode);
@@ -161,7 +183,7 @@
     }
     
     function checkContext(response) {
-        if((response.result.contexts.length > 0) && (response.result.contexts[0].name == 'leggi-libro')) {
+        if((response.result.contexts.length > 0) && (response.result.action == 'leggendo-libro') && (response.result.contexts[0].name == 'leggi-libro')) {
             console.log('Inizio a leggere');
             readFile('./libri/' + response.result.parameters.libro + '.txt');
         }

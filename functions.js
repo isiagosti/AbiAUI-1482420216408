@@ -11,7 +11,7 @@ window.init = function() {
     streamClient.close();
   }
   
-  client = new ApiAi.ApiAiClient({accessToken: '791a405b5d4047a9bd6688bfdfac1223', streamClientClass: ApiAi.ApiAiStreamClient});
+  client = new ApiAi.ApiAiClient({accessToken: '55292ddbe3fe49019f4743d0e39de6cb', streamClientClass: ApiAi.ApiAiStreamClient});
   
   streamClient = client.createStreamClient();
   console.log(client.createStreamClient());
