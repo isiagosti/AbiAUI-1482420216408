@@ -3,3 +3,10 @@ input.mic-image {
     float:right;
     padding-top: 8px;
 }
+
+#result {
+    overflow-y:scroll; 
+    height:550px; 
+    padding-left:2px; 
+    padding-right:2px;
+}

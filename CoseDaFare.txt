@@ -1,5 +1,9 @@
-- Immaigni collegate a quello che leggo.
+- Immagini collegate a quello che leggo.
 
-- Segnalibro.
+- Memorizzare il nome dell'anziano alla prima accensione.
 
-- Tieni aperto l'ascolto anche mentre legge.
+- Scelta libro per attore.
+
+- Newspaper.
+
+- Vuoi veramente che smetta di leggere? No. --> Continua a leggere.

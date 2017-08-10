@@ -14,28 +14,28 @@ window.init = function() {
   client = new ApiAi.ApiAiClient({accessToken: '55292ddbe3fe49019f4743d0e39de6cb', streamClientClass: ApiAi.ApiAiStreamClient});
   
   streamClient = client.createStreamClient();
-  console.log(client.createStreamClient());
+  //console.log(client.createStreamClient());
   streamClient.init();
     
   streamClient.onInit = function() {
-    console.log("> ON INIT use direct assignment property");
+    //console.log("> ON INIT use direct assignment property");
     //streamClient.open();
   };
 
   streamClient.onStartListening = function() {
-    console.log("> ON START LISTENING");
+    //console.log("> ON START LISTENING");
   };
 
   streamClient.onStopListening = function() {
-    console.log("> ON STOP LISTENING");
+    //console.log("> ON STOP LISTENING");
   };
 
   streamClient.onOpen = function() {
-    console.log("> ON OPEN SESSION");
+    //console.log("> ON OPEN SESSION");
   };
 
   streamClient.onClose = function() {
-    console.log("> ON CLOSE");
+    //console.log("> ON CLOSE");
     streamClient.close();
   };
 
@@ -43,11 +43,11 @@ window.init = function() {
 
   streamClient.onError = function(code, data) {
     streamClient.close();
-    console.log("> ON ERROR", code, data);
+    //console.log("> ON ERROR", code, data);
   };
 
   streamClient.onEvent = function(code, data) {
-    console.log("> ON EVENT", code, data);
+    //console.log("> ON EVENT", code, data);
   };
 }
 
@@ -71,5 +71,5 @@ function stopMic() {
 }
 
 function streamClientOnResults(results) {
-  console.log("> ON RESULTS", results);
+  //console.log("> ON RESULTS", results);
 }
