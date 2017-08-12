@@ -1,9 +1,3 @@
 - Immagini collegate a quello che leggo.
 
 - Memorizzare il nome dell'anziano alla prima accensione.
-
-- Scelta libro per attore.
-
-- Newspaper.
-
-- Vuoi veramente che smetta di leggere? No. --> Continua a leggere.

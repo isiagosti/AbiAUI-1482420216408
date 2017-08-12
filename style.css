@@ -1,3 +1,7 @@
+.clearfix {
+    clear: both;
+}
+
 input.mic-image {
     width: 30px;
     float:right;

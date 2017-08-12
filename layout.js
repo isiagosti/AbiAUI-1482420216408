@@ -2,14 +2,18 @@
     "use strict";
 
     var ENTER_KEY_CODE = 13;
-    var TALK_MSG = 'Speak now';
-    var clientName = 'Isabella';
-    var WELCOME_PHRASE = 'Ciao ' + clientName + '! Mi chiamo ABI. Puoi chiedermi di leggerti un libro o le ultime notizie. Come posso aiutarti?';
+    var TALK_MSG = 'Parla ora';
+    var CLIENT_NAME = 'Isabella';
+    var WELCOME_PHRASE = 'Ciao ' + CLIENT_NAME + '! Mi chiamo ABI. Puoi chiedermi di leggerti un libro o le ultime notizie. Come posso aiutarti?';
     var FINISHED_BOOK_PHRASE = 'Ho finito di leggere il libro. Posso fare qualcos\'altro per te?';
+    var FINISHED_NEWS_PHRASE = 'Ho finito di leggere tutte le notizie. Posso fare qualcos\'altro per te?';
     var READ_FROM_BEGINNING_PHRASE = 'Va bene. Ricomincio da capo allora.';
     var READ_FROM_BOOKMARK_PHRASE = 'Va bene. Ricomincio da dove ci eravamo fermati.';
     var ALREADY_STARTED_BOOK_PHRASE = 'Abbiamo già iniziato questo libro. Vuoi ricominciare da dove ci siamo fermati?';
     var READING_PHRASE = 'Ok! Inizio a leggere';
+    var BOOK_NOT_FOUND_PHRASE = 'Non sono riuscito a trovare il libro richiesto. Puoi specificare di nuovo autore e titolo?';
+    var NON_STOP_PHRASE = 'Ok! Continuo a leggere allora.';
+    var LATEST_NEWS_PHRASE = 'Ok! Ti leggo subito le ultime notizie.';
     
     var queryInput, resultDiv, micBtn, timeout, isSentence;
     var recognition = new webkitSpeechRecognition();
@@ -21,9 +25,9 @@
     var defaultPatienceThreshold = 2;
     var patience, queryNode, reader; 
     var speech = window.speechSynthesis;
-    var currentLine = [{'id':'Harry Potter', 'line':0},{'id': 'Il Signore degli Anelli', 'line':0}]; // Line ABI has to start reading from next time the book is requested, for each book.
+    var currentLine = [{'id':'Harry Potter, J. K. Rowling', 'line':0},{'id': 'Il Signore degli Anelli, J. R. R. Tolkien', 'line':0}]; // Line ABI has to start reading from next time the book is requested, for each book.
     var bookmark = false;
-    var bookToRead = ['', 0];
+    var bookToRead = {'title':'', 'author':'', 'index':0};
 
     window.onload = init;
 
@@ -75,7 +79,7 @@
             //tts(reader.responseText);
             
             var lines = reader.responseText.split('. ');
-            readBook(lines, currentLine[bookToRead[1]].line);
+            readBook(lines, currentLine[bookToRead.index].line);
             
             /*
             var msg;
@@ -115,15 +119,38 @@
                     readBook(text, index);
                 } else {
                     // ABI has finished reading the book.
-                    currentLine[bookToRead[1]].line = 0;
-                    bookToRead = ['', 0];
+                    currentLine[bookToRead.index].line = 0;
+                    bookToRead.title = '';
+                    bookToRead.author = '';
+                    bookToRead.index = 0;
                     var responseNode = createResponseNode();
                     readSimpleNode(responseNode, FINISHED_BOOK_PHRASE);
                 }
             } else {
                 // The user wants ABI to stop reading. --> Save the current line for bookmark.
-                currentLine[bookToRead[1]].line = index;
+                currentLine[bookToRead.index].line = index;
                 console.log(currentLine);
+            }
+        };
+    }
+    
+    function readNews(text, index) {
+        console.log('(' + index + ')\n' + text[index].title);
+        var msg = new SpeechSynthesisUtterance(text[index].title);
+        speaking = true;
+        speech.speak(msg);
+        msg.onend = function(event) {
+            if(speaking) {
+                speaking = false;
+                if(index < text.length - 1) {
+                    // Read the next title.
+                    index ++;
+                    readNews(text, index);
+                } else {
+                    // ABI has finished reading all the news.
+                    var responseNode = createResponseNode();
+                    readSimpleNode(responseNode, FINISHED_NEWS_PHRASE);
+                }
             }
         };
     }
@@ -183,36 +210,61 @@
         if(bookmark) {
             bookmark = false;
             if(queryValue.includes('No')) {
-                currentLine[bookToRead[1]].line = 0; 
+                currentLine[bookToRead.index].line = 0; 
                 readSimpleNode(responseNode, READ_FROM_BEGINNING_PHRASE);
             } else {
                 readSimpleNode(responseNode, READ_FROM_BOOKMARK_PHRASE);
             }
-            readFile('./books/' + bookToRead[0] + '.txt');
+            readFile('./books/' + bookToRead.title + ', ' + bookToRead.author + '.txt');
         } else {
             sendText(queryValue)
               .then(function(response) {
                 var result;
                 try {
-                  result = response.result.fulfillment.speech
+                  result = response.result.fulfillment.speech;
                 } catch(error) {
                   result = "";
                 }
 
+                var found = false;
+                var goInElse = true;
+                
                 if(result.includes(READING_PHRASE)) {
-                    bookToRead[0] = response.result.parameters.libro;
+                    bookToRead.title = response.result.parameters.libro;
+                    bookToRead.author = response.result.parameters.autore;
                     for(var i=0; i<currentLine.length; i++) {
-                        if(currentLine[i].id == bookToRead[0]) {
-                            bookToRead[1] = i;
+                        if(currentLine[i].id == (bookToRead.title + ', ' + bookToRead.author)) {
+                            bookToRead.index = i;
+                            found = true;
                             break;
                         }
                     }
+                    if(!found) {
+                        goInElse = false;
+                        readSimpleNode(responseNode, BOOK_NOT_FOUND_PHRASE);
+                    }
+                } else if(result.includes(NON_STOP_PHRASE)) {
+                    readFile('./books/' + bookToRead.title + ', ' + bookToRead.author + '.txt');
+                } else if(result.includes(LATEST_NEWS_PHRASE)) {
+                    google.load("feeds", "1");
+
+                    function initializeFeed() {
+                      var feed = new google.feeds.Feed("https://news.google.com/news/rss/headlines?hl=it&ned=it");
+                      feed.load(function(result) {
+                        if (!result.error) {
+                            readNews(result.feed.entries, 0);
+                        }
+                      });
+                    }
+                    
+                    google.setOnLoadCallback(initializeFeed);
                 }
                 
-                if(result.includes(READING_PHRASE) && currentLine[bookToRead[1]].line != 0) {
+                if(found && currentLine[bookToRead.index].line != 0) {
+                    goInElse = false;
                     bookmark = true;
                     readSimpleNode(responseNode, ALREADY_STARTED_BOOK_PHRASE);
-                } else {
+                } else if (goInElse){
                     setResponseJSON(response);
                     setResponseOnNode(response, result, responseNode);
                 }
@@ -274,9 +326,8 @@
     }
     
     function checkContext(response) {
-        if((response.result.contexts.length > 0) && (response.result.fulfillment.speech.includes(READING_PHRASE))) {
-           //&& (response.result.action == 'leggendo-libro') && (response.result.contexts[0].name == 'leggi-libro')) {
-            readFile('./books/' + bookToRead[0] + '.txt');
+        if(response.result.fulfillment.speech.includes(READING_PHRASE)) {
+            readFile('./books/' + bookToRead.title + ', ' + bookToRead.author + '.txt');
         }
     }
 

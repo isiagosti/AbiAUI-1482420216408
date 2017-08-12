@@ -1,49 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ABI</title>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css">
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
-    <script src="./target/ApiAi.js"></script>
-    <script src="functions.js"></script>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>ABI</title>
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/css/materialize.min.css">
+        <link rel="stylesheet" href="style.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
+        <script src="./target/ApiAi.js"></script>
+        <script src="functions.js"></script>
+        
+        <script type="text/javascript" src="https://rss2json.com/gfapi.js"></script>
 
-    <style>
-        .clearfix {
-            clear: both;
-        }
-    </style>
-</head>
-<body>
-<div id="main-wrapper" style="padding-top:50px">
-    <div class="container">
-        <div class="row">
-            <div class="col s5" > 
-                <div style="display:inline-block; width:350px;">
-                    <input type="text" placeholder="Dimmi qualcosa..." id="q" style="float:left; width:300px;">
-                    <input type="image" title="Parla con ABI" class="mic-image" src="./img/mic.png" id="mic" > 
-                </div>
+        <!--<script type="text/javascript">
+            $.getJSON('http://whateverorigin.org/get?url=' + encodeURIComponent('http://www.ilsole24ore.com/art/mondo/2017-08-10/troppi-rischi-la-cina-un-cambio-regime--212353.shtml?uuid=AEsOeSBC&refresh_ce=1') + '&callback=?', function(data){
+                alert(data.contents);
+            });
+        </script> -->
+        
+    </head>
+    <body>
+        <div id="main-wrapper" style="padding-top:50px">
+            <div class="container">
+                <div class="row">
+                    <div class="col s5" > 
+                        <div style="display:inline-block; width:350px;">
+                            <input type="text" placeholder="Dimmi qualcosa..." id="q" style="float:left; width:300px;">
+                            <input type="image" title="Parla con ABI" class="mic-image" src="./img/mic.png" id="mic" > 
+                        </div>
 
-                <div id="result">
-                    <!--div class="left-align flow-text">test</div>
-                    <div class="right-align flow-text">one more test</div-->
+                        <div id="result">
+                            <!--div class="left-align flow-text">test</div>
+                            <div class="right-align flow-text">one more test</div-->
+                        </div>
+                    </div>
+                    <div class="col s2"></div>
+                    <div class="col s5">
+                    <!--h5>Request payload:</h5>
+                    <pre id="jsonRequest"></pre-->
+                    <h5>Response payload:</h5>
+                    <pre id="jsonResponse" style="overflow-y:scroll; overflow-x:visible; height:550px;"></pre>
+                    </div>
                 </div>
-            </div>
-            <div class="col s2"></div>
-            <div class="col s5">
-            <!--h5>Request payload:</h5>
-            <pre id="jsonRequest"></pre-->
-            <h5>Response payload:</h5>
-            <pre id="jsonResponse" style="overflow-y:scroll; overflow-x:visible; height:550px;"></pre>
             </div>
         </div>
-    </div>
-</div>
-    
-<script defer src="layout.js"></script>
-</body>
+
+        <script defer src="layout.js"></script>
+    </body>
 </html>
