@@ -2,21 +2,13 @@
     "use strict";
 
     var ENTER_KEY_CODE = 13;
-    var TALK_MSG = 'Parla ora';
-    var CLIENT_NAME = 'Isabella';
-    var WELCOME_PHRASE = 'Ciao ' + CLIENT_NAME + '! Mi chiamo ABI. Puoi chiedermi di leggerti un libro o le ultime notizie. Come posso aiutarti?';
-    var FINISHED_BOOK_PHRASE = 'Ho finito di leggere il libro. Posso fare qualcos\'altro per te?';
-    var FINISHED_NEWS_PHRASE = 'Ho finito di leggere tutte le notizie. Posso fare qualcos\'altro per te?';
-    var READ_FROM_BEGINNING_PHRASE = 'Va bene. Ricomincio da capo allora.';
-    var READ_FROM_BOOKMARK_PHRASE = 'Va bene. Ricomincio da dove ci eravamo fermati.';
-    var ALREADY_STARTED_BOOK_PHRASE = 'Abbiamo già iniziato questo libro. Vuoi ricominciare da dove ci siamo fermati?';
-    var READING_PHRASE = 'Ok! Inizio a leggere';
-    var BOOK_NOT_FOUND_PHRASE = 'Non sono riuscito a trovare il libro richiesto. Puoi specificare di nuovo autore e titolo?';
-    var NON_STOP_PHRASE = 'Ok! Continuo a leggere allora.';
-    var LATEST_NEWS_PHRASE = 'Ok! Ti leggo subito le ultime notizie.';
+    var TALK_MSG, WELCOME_PHRASE, FINISHED_BOOK_PHRASE, FINISHED_NEWS_PHRASE, READ_FROM_BEGINNING_PHRASE, READ_FROM_BOOKMARK_PHRASE, ALREADY_STARTED_BOOK_PHRASE, READING_PHRASE, BOOK_NOT_FOUND_PHRASE, NON_STOP_PHRASE, LATEST_NEWS_PHRASE, BOOKS_PATH, NEWS_FEED, VOICE_CHANGED_PHRASE;
     
-    var queryInput, resultDiv, micBtn, timeout, isSentence;
+    var queryInput, resultDiv, micBtn, timeout, isSentence, voices, chosenVoice;
+    var count = 0;
+    var conversationStart = true;
     var recognition = new webkitSpeechRecognition();
+    var speech = window.speechSynthesis;
     var recognizing = false;
     var speaking = false;
     var prefix = '';
@@ -24,8 +16,7 @@
     var oldPlaceholder = null;
     var defaultPatienceThreshold = 2;
     var patience, queryNode, reader; 
-    var speech = window.speechSynthesis;
-    var currentLine = [{'id':'Harry Potter, J. K. Rowling', 'line':0},{'id': 'Il Signore degli Anelli, J. R. R. Tolkien', 'line':0}]; // Line ABI has to start reading from next time the book is requested, for each book.
+    var currentLine; // Line ABI has to start reading from next time the book is requested, for each book.
     var bookmark = false;
     var bookToRead = {'title':'', 'author':'', 'index':0};
 
@@ -35,14 +26,108 @@
         queryInput = document.getElementById("q");
         resultDiv = document.getElementById("result");
         micBtn = document.getElementById('mic');
+        var itaBtn = document.getElementById("ita");
+        var engBtn = document.getElementById("eng");
       
         micBtn.addEventListener('click', speakButton, false);
+        //itaBtn.addEventListener('click', setItalian, false);
+        //engBtn.addEventListener('click', setEnglish, false);
         queryInput.addEventListener("keydown", queryInputKeyDown);
         patience = parseInt(queryInput.dataset.patience, 10) || defaultPatienceThreshold;
+    }
+    
+    window.speechSynthesis.onvoiceschanged = function() {
+        if(count == 0) {
+            voices = speech.getVoices();
+
+            $('select').material_select();
+            var options = [0, 2, 8, 49, 1, 32];
+
+            for(var i = 0; i < options.length ; i++) {
+                var j = options[i];
+                var value = voices[j].name + ' (' + voices[j].lang + ')';
+
+                // And add a new value
+                $("select").append($("<option></option>").attr("value", j).text(value));
+
+                // Update the content 
+                $("select").material_select();
+            }
+            
+            count++;
+        }
+    };
+    
+    $('select').on('change',function() {
+        chosenVoice = $(this).val();
+
+        if(chosenVoice == 0 || chosenVoice == 2) {
+            setItalian();
+        } else {
+            setEnglish();
+        }
+    });
+    
+    function setItalian() {
+        TALK_MSG = 'Parla ora';
+        WELCOME_PHRASE = 'Ciao! Mi chiamo ABI. Puoi chiedermi di leggerti un libro o le ultime notizie. Come posso aiutarti?';
+        FINISHED_BOOK_PHRASE = 'Ho finito di leggere il libro. Posso fare qualcos\'altro per te?';
+        FINISHED_NEWS_PHRASE = 'Ho finito di leggere tutte le notizie. Posso fare qualcos\'altro per te?';
+        READ_FROM_BEGINNING_PHRASE = 'Va bene. Ricomincio da capo allora.';
+        READ_FROM_BOOKMARK_PHRASE = 'Va bene. Ricomincio da dove ci eravamo fermati.';
+        ALREADY_STARTED_BOOK_PHRASE = 'Abbiamo già iniziato questo libro. Vuoi ricominciare da dove ci siamo fermati?';
+        READING_PHRASE = 'Ok! Inizio a leggere';
+        BOOK_NOT_FOUND_PHRASE = 'Non riesco a trovare il libro richiesto. Posso fare qualcos\'altro per te?';
+        NON_STOP_PHRASE = 'Ok! Continuo a leggere allora.';
+        LATEST_NEWS_PHRASE = 'Ok! Ti leggo subito le ultime notizie.';
+        VOICE_CHANGED_PHRASE = 'Ho cambiato la mia voce. Cosa posso fare per te?';
+        BOOKS_PATH = 'booksIta';
+        NEWS_FEED = "https://news.google.com/news/rss/headlines?hl=it&ned=it";
+        currentLine = [{'id':'Harry Potter, J. K. Rowling', 'line':0},{'id': 'Il Signore degli Anelli, J. R. R. Tolkien', 'line':0}];
+        
+        startConversation('55292ddbe3fe49019f4743d0e39de6cb');
+    }
+    
+    function setEnglish() {
+        TALK_MSG = 'Speak now';
+        WELCOME_PHRASE = 'Hello, my name is ABI! You can say things like «read me a book» or «read me the latest news». How can I help you?';
+        FINISHED_BOOK_PHRASE = 'I\'m finished reading the book. Can I do anything else for you?';
+        FINISHED_NEWS_PHRASE = 'I\'m finished reading all the news. Can I do anything else for you?';
+        READ_FROM_BEGINNING_PHRASE = 'Ok. I\'ll start from the beginning then.';
+        READ_FROM_BOOKMARK_PHRASE = 'Ok. I\'ll start from where we left last time then.';
+        ALREADY_STARTED_BOOK_PHRASE = 'We already started reading this book. Do you want to resume from where we left?';
+        READING_PHRASE = 'Ok! I\'ll start reading';
+        BOOK_NOT_FOUND_PHRASE = 'I can\'t seem to find the book. Can I do anything else for you?';
+        NON_STOP_PHRASE = 'Ok! I\'ll keep reading then.';
+        LATEST_NEWS_PHRASE = 'Great! I\'ll start reading';
+        VOICE_CHANGED_PHRASE = 'I\'ve changed my voice. What can I do for you?';
+        BOOKS_PATH = 'booksEng';
+        currentLine = [{'id':'Harry Potter, J. K. Rowling', 'line':0},{'id': 'The Lord of the Rings, J. R. R. Tolkien', 'line':0}];
+        queryInput.placeholder = "Ask me something...";
+        
+        if(chosenVoice == 1 || chosenVoice == 32) {
+            // US
+            NEWS_FEED = "https://news.google.com/news/rss/headlines?ned=us&hl=en";
+            recognition.lang = "en-US";
+        } else if(chosenVoice == 8 || chosenVoice == 49) {
+            //UK
+            NEWS_FEED = "https://news.google.com/news/rss/headlines?ned=uk&hl=en-GB";
+            recognition.lang = "en-UK";
+        }
+        
+        startConversation('6cdd59eb028c4db1bfd3f73d108368e5');
+    }
+    
+    function startConversation(token) {
         document.getElementById("main-wrapper").style.display = "block";
-        window.init();
+        window.init(token);
         var welcomeNode = createResponseNode();
-        readSimpleNode(welcomeNode, WELCOME_PHRASE);
+        if(conversationStart) {
+            conversationStart = false;
+            readSimpleNode(welcomeNode, WELCOME_PHRASE);
+        } else {
+            readSimpleNode(welcomeNode, VOICE_CHANGED_PHRASE);
+        }
     }
     
     function readSimpleNode(node, result) {
@@ -54,6 +139,7 @@
             }
             speaking = true;
             var msg = new SpeechSynthesisUtterance(result);
+            msg.voice = voices[chosenVoice];
             Promise.resolve(speech.speak(msg))
             .then(function () {speaking = false;})
             .catch(function (err) {
@@ -108,6 +194,7 @@
     function readBook(text, index) {
         console.log('(' + index + ')\n' + text[index]);
         var msg = new SpeechSynthesisUtterance(text[index]);
+        msg.voice = voices[chosenVoice];
         speaking = true;
         speech.speak(msg);
         msg.onend = function(event) {
@@ -129,7 +216,6 @@
             } else {
                 // The user wants ABI to stop reading. --> Save the current line for bookmark.
                 currentLine[bookToRead.index].line = index;
-                console.log(currentLine);
             }
         };
     }
@@ -137,6 +223,7 @@
     function readNews(text, index) {
         console.log('(' + index + ')\n' + text[index].title);
         var msg = new SpeechSynthesisUtterance(text[index].title);
+        msg.voice = voices[chosenVoice];
         speaking = true;
         speech.speak(msg);
         msg.onend = function(event) {
@@ -157,6 +244,7 @@
     
     function speakButton() {
         event.preventDefault();
+        micBtn.className = 'btn-floating waves-effect waves-light red';
         
         // stop the reading if the user says something
         if(speaking) {
@@ -166,6 +254,7 @@
         
         // stop user's recognition if already going
         if (recognizing) {
+            micBtn.className = 'btn-floating waves-effect waves-light blue';
             recognition.stop();
             return;
         } else {
@@ -215,7 +304,7 @@
             } else {
                 readSimpleNode(responseNode, READ_FROM_BOOKMARK_PHRASE);
             }
-            readFile('./books/' + bookToRead.title + ', ' + bookToRead.author + '.txt');
+            readFile('./' + BOOKS_PATH + '/' + bookToRead.title + ', ' + bookToRead.author + '.txt');
         } else {
             sendText(queryValue)
               .then(function(response) {
@@ -244,12 +333,12 @@
                         readSimpleNode(responseNode, BOOK_NOT_FOUND_PHRASE);
                     }
                 } else if(result.includes(NON_STOP_PHRASE)) {
-                    readFile('./books/' + bookToRead.title + ', ' + bookToRead.author + '.txt');
+                    readFile('./' + BOOKS_PATH + '/' + bookToRead.title + ', ' + bookToRead.author + '.txt');
                 } else if(result.includes(LATEST_NEWS_PHRASE)) {
                     google.load("feeds", "1");
 
                     function initializeFeed() {
-                      var feed = new google.feeds.Feed("https://news.google.com/news/rss/headlines?hl=it&ned=it");
+                      var feed = new google.feeds.Feed(NEWS_FEED);
                       feed.load(function(result) {
                         if (!result.error) {
                             readNews(result.feed.entries, 0);
@@ -265,12 +354,12 @@
                     bookmark = true;
                     readSimpleNode(responseNode, ALREADY_STARTED_BOOK_PHRASE);
                 } else if (goInElse){
-                    setResponseJSON(response);
+                    //setResponseJSON(response);
                     setResponseOnNode(response, result, responseNode);
                 }
               })
               .catch(function(err) {
-                setResponseJSON(err);
+                //setResponseJSON(err);
                 setResponseOnNode("Something went wrong", responseNode);
               });
         }
@@ -278,7 +367,7 @@
 
     function createQueryNode(query) {
         var node = document.createElement('div');
-        node.className = "clearfix left-align left card-panel green accent-1";
+        node.className = "clearfix left-align left card-panel teal accent-4 white-text";
         node.innerHTML = query;
         resultDiv.appendChild(node);
         node.scrollIntoView();
@@ -287,7 +376,7 @@
     
     function createResponseNode() {
         var node = document.createElement('div');
-        node.className = "clearfix right-align right card-panel blue-text text-darken-2 hoverable";
+        node.className = "clearfix right-align right card-panel teal-text text-lighten-1 hoverable";
         node.innerHTML = "...";
         resultDiv.appendChild(node);
         node.scrollIntoView();
@@ -304,6 +393,7 @@
             }
             speaking = true;
             var msg = new SpeechSynthesisUtterance(result);
+            msg.voice = voices[chosenVoice];
             Promise.resolve(speech.speak(msg))
             .then(function () {speaking = false; checkContext(response);})
             .catch(function (err) {
@@ -327,7 +417,7 @@
     
     function checkContext(response) {
         if(response.result.fulfillment.speech.includes(READING_PHRASE)) {
-            readFile('./books/' + bookToRead.title + ', ' + bookToRead.author + '.txt');
+            readFile('./' + BOOKS_PATH + '/' + bookToRead.title + ', ' + bookToRead.author + '.txt');
         }
     }
 
@@ -338,6 +428,7 @@
     
     function restartTimer(queryValue) {
         timeout = setTimeout(function() {
+            micBtn.className = 'btn-floating waves-effect waves-light blue';
             setQueryOnNodeFromMic(queryValue, queryNode);
             recognition.stop();
         }, patience * 1000);
@@ -356,12 +447,13 @@
     };
 
     recognition.onend = function() {
-			recognizing = false;
-			clearTimeout(timeout);
-			micBtn.classList.remove('listening');
-            queryInput.value = '';
-			if (oldPlaceholder !== null) queryInput.placeholder = oldPlaceholder;
-		};
+        recognizing = false;
+        clearTimeout(timeout);
+        micBtn.classList.remove('listening');
+        queryInput.value = '';
+        if (oldPlaceholder !== null) 
+            queryInput.placeholder = oldPlaceholder;
+    };
         
     recognition.onresult = function(event) {
 			clearTimeout(timeout);

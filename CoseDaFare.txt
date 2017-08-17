@@ -1,3 +1,1 @@
-- Immagini collegate a quello che leggo.
-
-- Memorizzare il nome dell'anziano alla prima accensione.
+- currentLine non deve cambiare se passo da italiano maschile a italiano femminile (stessa cosa per inglese).

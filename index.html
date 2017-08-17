@@ -9,44 +9,59 @@
         <link rel="stylesheet" href="style.css">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.7/js/materialize.min.js"></script>
-        <script src="./target/ApiAi.js"></script>
-        <script src="functions.js"></script>
-        
         <script type="text/javascript" src="https://rss2json.com/gfapi.js"></script>
-
-        <!--<script type="text/javascript">
-            $.getJSON('http://whateverorigin.org/get?url=' + encodeURIComponent('http://www.ilsole24ore.com/art/mondo/2017-08-10/troppi-rischi-la-cina-un-cambio-regime--212353.shtml?uuid=AEsOeSBC&refresh_ce=1') + '&callback=?', function(data){
-                alert(data.contents);
-            });
-        </script> -->
         
     </head>
     <body>
+        <div class="row" style="background-color: #00bfa5; margin-top: 50px; padding-left:50px; padding-bottom: 60px; padding-right: 50px; padding-top: 30px;">
+            <div class="col s6">
+                <h2 style="color:white; font-weight:200; text-align:right;">Configure language: </h2>
+            </div>
+            <div class="col s1"></div>
+            <div class="col s4">
+                <!--
+                <a class="waves-effect waves-light btn-large" style="background-color: transparent; box-shadow: none; color: #eee; border:2px solid #eee; box-sizing: content-box; margin-right:40px;" id="eng">English</a>
+                <a class="waves-effect waves-light btn-large" style="background-color: transparent; box-shadow: none; color: #eee; border:2px solid #eee; box-sizing: content-box;" id="ita">Italiano</a>
+                -->
+                <div class="input-field col s12 white-text">
+                    <select>
+                      <option value="" disabled selected>- Select -</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col s1"></div>
+        </div>
+        
         <div id="main-wrapper" style="padding-top:50px">
             <div class="container">
                 <div class="row">
-                    <div class="col s5" > 
-                        <div style="display:inline-block; width:350px;">
-                            <input type="text" placeholder="Dimmi qualcosa..." id="q" style="float:left; width:300px;">
-                            <input type="image" title="Parla con ABI" class="mic-image" src="./img/mic.png" id="mic" > 
+                    <div class="col s12" > 
+                        <div class="row">
+                            <input type="text" placeholder="Dimmi qualcosa..." id="q" style="float:left; margin-right:10px; width:93%;">
+                            <a class="btn-floating waves-effect waves-light blue tooltipped" data-position="right" data-delay="700" data-tooltip="Parla con ABI" id="mic" style="height:45px; width:45px; float:right;"><i class="material-icons" style="font-size:25px; padding-top:5px">mic</i></a>
                         </div>
 
-                        <div id="result">
+                        <div id="result" style="margin-right:30px;">
                             <!--div class="left-align flow-text">test</div>
                             <div class="right-align flow-text">one more test</div-->
                         </div>
                     </div>
+                    <!--
                     <div class="col s2"></div>
                     <div class="col s5">
                     <!--h5>Request payload:</h5>
-                    <pre id="jsonRequest"></pre-->
+                    <pre id="jsonRequest"></pre>-->
+                    <!--
                     <h5>Response payload:</h5>
                     <pre id="jsonResponse" style="overflow-y:scroll; overflow-x:visible; height:550px;"></pre>
                     </div>
+                    -->
                 </div>
             </div>
         </div>
 
+        <script src="./target/ApiAi.js"></script>
+        <script src="functions.js"></script>
         <script defer src="layout.js"></script>
     </body>
 </html>

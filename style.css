@@ -14,3 +14,22 @@ input.mic-image {
     padding-left:2px; 
     padding-right:2px;
 }
+
+#main-wrapper {
+    display: none;
+}
+
+.input-field {
+    margin-top: 25px;
+    border: 2px solid #fff;
+}
+
+ /* label underline focus color */
+.input-field input {
+    border-bottom: 1px solid white !important;
+    box-shadow: 0 1px 0 0 white !important
+ }
+
+.select-wrapper span.caret {
+    color: white;
+}

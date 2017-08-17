@@ -5,13 +5,13 @@
  */
 
 var client, streamClient;
-window.init = function() {
+window.init = function(token) {
   
   if (streamClient) {
     streamClient.close();
   }
   
-  client = new ApiAi.ApiAiClient({accessToken: '55292ddbe3fe49019f4743d0e39de6cb', streamClientClass: ApiAi.ApiAiStreamClient});
+  client = new ApiAi.ApiAiClient({accessToken: token, streamClientClass: ApiAi.ApiAiStreamClient});
   
   streamClient = client.createStreamClient();
   //console.log(client.createStreamClient());
