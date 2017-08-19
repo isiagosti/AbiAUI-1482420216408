@@ -48,7 +48,13 @@
                 var value = voices[j].name + ' (' + voices[j].lang + ')';
 
                 // And add a new value
-                $("select").append($("<option></option>").attr("value", j).text(value));
+                if(j==0 || j==2) {
+                    $("select").append($("<option></option>").attr("value", j).attr("data-icon", "./img/Italia.png").attr("class", "circle").text(value));
+                } else if(j==8 || j==49) {
+                    $("select").append($("<option></option>").attr("value", j).attr("data-icon", "./img/UK.jpg").attr("class", "circle").text(value));
+                } else {
+                    $("select").append($("<option></option>").attr("value", j).attr("data-icon", "./img/US.png").attr("class", "circle").text(value));
+                }
 
                 // Update the content 
                 $("select").material_select();
