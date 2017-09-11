@@ -4,7 +4,8 @@
     var ENTER_KEY_CODE = 13;
     var TALK_MSG, WELCOME_PHRASE, FINISHED_BOOK_PHRASE, FINISHED_NEWS_PHRASE, READ_FROM_BEGINNING_PHRASE, READ_FROM_BOOKMARK_PHRASE, ALREADY_STARTED_BOOK_PHRASE, READING_PHRASE, BOOK_NOT_FOUND_PHRASE, NON_STOP_PHRASE, LATEST_NEWS_PHRASE, BOOKS_PATH, NEWS_FEED, VOICE_CHANGED_PHRASE;
     
-    var queryInput, resultDiv, micBtn, timeout, isSentence, voices, chosenVoice;
+    var queryInput, resultDiv, micBtn, timeout, isSentence, voices, olderVoice;
+    var chosenVoice = -1;
     var count = 0;
     var conversationStart = true;
     var recognition = new webkitSpeechRecognition();
@@ -46,15 +47,18 @@
             for(var i = 0; i < options.length ; i++) {
                 var j = options[i];
                 var value = voices[j].name + ' (' + voices[j].lang + ')';
+                var flagImage;
 
-                // And add a new value
                 if(j==0 || j==2) {
-                    $("select").append($("<option></option>").attr("value", j).attr("data-icon", "./img/Italia.png").attr("class", "circle").text(value));
+                    flagImage = "./img/Italia.png";
                 } else if(j==8 || j==49) {
-                    $("select").append($("<option></option>").attr("value", j).attr("data-icon", "./img/UK.jpg").attr("class", "circle").text(value));
+                    flagImage = "./img/UK.jpg";
                 } else {
-                    $("select").append($("<option></option>").attr("value", j).attr("data-icon", "./img/US.png").attr("class", "circle").text(value));
+                    flagImage = "./img/US.png";
                 }
+                
+                // Add a new value
+                $("select").append($("<option></option>").attr("value", j).attr("data-icon", flagImage).attr("class", "circle").text(value));
 
                 // Update the content 
                 $("select").material_select();
@@ -65,6 +69,7 @@
     };
     
     $('select').on('change',function() {
+        olderVoice = chosenVoice;
         chosenVoice = $(this).val();
 
         if(chosenVoice == 0 || chosenVoice == 2) {
@@ -89,8 +94,9 @@
         VOICE_CHANGED_PHRASE = 'Ho cambiato la mia voce. Cosa posso fare per te?';
         BOOKS_PATH = 'booksIta';
         NEWS_FEED = "https://news.google.com/news/rss/headlines?hl=it&ned=it";
-        currentLine = [{'id':'Harry Potter, J. K. Rowling', 'line':0},{'id': 'Il Signore degli Anelli, J. R. R. Tolkien', 'line':0}];
-        
+        if(olderVoice != 0 && olderVoice != 2) {
+            currentLine = [{'id':'Harry Potter e la Pietra Filosofale, J. K. Rowling', 'line':0},{'id': 'Il Signore degli Anelli La Compagnia dell\'Anello, J. R. R. Tolkien', 'line':0}, {'id':'Il Sorcio, Georges Simenon', 'line':0}];
+        }
         startConversation('55292ddbe3fe49019f4743d0e39de6cb');
     }
     
@@ -108,7 +114,9 @@
         LATEST_NEWS_PHRASE = 'Great! I\'ll start reading';
         VOICE_CHANGED_PHRASE = 'I\'ve changed my voice. What can I do for you?';
         BOOKS_PATH = 'booksEng';
-        currentLine = [{'id':'Harry Potter, J. K. Rowling', 'line':0},{'id': 'The Lord of the Rings, J. R. R. Tolkien', 'line':0}];
+        if(olderVoice == -1 || olderVoice == 0 || olderVoice == 2) {
+            currentLine = [{'id':'Harry Potter and the Sorcerer\'s Stone, J. K. Rowling', 'line':0},{'id': 'The Lord of the Rings The Fellowship of the Ring, J. R. R. Tolkien', 'line':0}];
+        }
         queryInput.placeholder = "Ask me something...";
         
         if(chosenVoice == 1 || chosenVoice == 32) {
@@ -327,6 +335,7 @@
                 if(result.includes(READING_PHRASE)) {
                     bookToRead.title = response.result.parameters.libro;
                     bookToRead.author = response.result.parameters.autore;
+                    console.log(bookToRead);
                     for(var i=0; i<currentLine.length; i++) {
                         if(currentLine[i].id == (bookToRead.title + ', ' + bookToRead.author)) {
                             bookToRead.index = i;
@@ -339,7 +348,23 @@
                         readSimpleNode(responseNode, BOOK_NOT_FOUND_PHRASE);
                     }
                 } else if(result.includes(NON_STOP_PHRASE)) {
-                    readFile('./' + BOOKS_PATH + '/' + bookToRead.title + ', ' + bookToRead.author + '.txt');
+                    if(bookToRead.title != '') {
+                        readFile('./' + BOOKS_PATH + '/' + bookToRead.title + ', ' + bookToRead.author + '.txt');
+                    } else {
+                        google.load("feeds", "1");
+
+                        function initializeFeed() {
+                          var feed = new google.feeds.Feed(NEWS_FEED);
+                          feed.load(function(result) {
+                            if (!result.error) {
+                                readNews(result.feed.entries, 0);
+                            }
+                          });
+                        }
+
+                        google.setOnLoadCallback(initializeFeed);
+                    }
+                    
                 } else if(result.includes(LATEST_NEWS_PHRASE)) {
                     google.load("feeds", "1");
 

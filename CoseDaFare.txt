@@ -1,1 +1,1 @@
-- currentLine non deve cambiare se passo da italiano maschile a italiano femminile (stessa cosa per inglese).
+- Aggiungere libro di Simenon o qualcosa per la nonna.
